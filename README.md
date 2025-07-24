@@ -176,5 +176,3 @@ For any inquiries or support, feel free to reach out via:
 
 * **Email**: \[[joshuvavinith.g@care.ac.in](mailto:joshuvavinith.g@care.ac.in)]
 * **GitHub**: \[[your GitHub profile link](https://github.com/joshuvavinith/)]
-
-```
