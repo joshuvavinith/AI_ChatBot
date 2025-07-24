@@ -1,0 +1,7 @@
+dialog_id,line_id,text
+1,1,Hi
+1,2,Hello! How can I help you?
+2,1,What is your name?
+2,2,I'm a chatbot created with Python!
+3,1,Bye
+3,2,Goodbye! Have a nice day.
