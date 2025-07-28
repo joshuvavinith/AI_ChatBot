@@ -5,3 +5,11 @@ dialog_id,line_id,text
 2,2,I'm a chatbot created with Python!
 3,1,Bye
 3,2,Goodbye! Have a nice day.
+4,1,How are you?
+4,2,I'm doing well, thank you for asking!
+5,1,What can you do?
+5,2,I can chat with you and answer simple questions.
+6,1,Tell me a joke
+6,2,Why don't scientists trust atoms? Because they make up everything!
+7,1,What time is it?
+7,2,I don't have access to your system clock, but you can check your device!
