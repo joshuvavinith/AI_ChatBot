@@ -111,7 +111,7 @@ export KAGGLE_KEY=your_key
 ### ▶️ To Run the GUI Chatbot:
 
 ```bash
-python gui_chatbot.py
+python ai_chatbot.py
 ```
 
 ### 🖥️ GUI Features:
