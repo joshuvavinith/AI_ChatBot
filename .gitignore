@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+
+# Jupyter/IPython
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# Environment / secrets
+.env
+
+# Pytest cache
+.pytest_cache/
+
+# Temporary / generated files
+converted_dialog.csv
