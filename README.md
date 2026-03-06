@@ -2,17 +2,25 @@
 # 🤖 AI ChatBot
 
 ![CI](https://github.com/joshuvavinith/AI_ChatBot/actions/workflows/ci.yml/badge.svg)
-![Python](https://img.shields.io/badge/python-3.12-blue)
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-A modern, extensible Python chatbot with two backends:
+A modern, extensible Python chatbot that generates context-aware, dynamic
+responses. It ships with two interchangeable backends and three ready-to-use
+interfaces — no external services are required to get started.
 
 | Mode | When active | What it uses |
 |------|-------------|--------------|
 | **LLM** | `OPENAI_API_KEY` is set | OpenAI Chat Completions (GPT-3.5 / GPT-4o) |
 | **Pattern Matching** | No API key present | Offline CSV dialog dataset |
 
-Three interfaces are available: a **Tkinter desktop GUI**, a **Streamlit web app**, and a **FastAPI REST backend**.
+Three interfaces are included out of the box:
+
+| Interface | Entry point | Default URL |
+|-----------|-------------|-------------|
+| **Streamlit web app** | `streamlit run web_demo.py` | `http://localhost:8501` |
+| **FastAPI REST API** | `uvicorn api:app --reload` | `http://localhost:8000/docs` |
+| **Tkinter desktop GUI** | `python ai_chatbot.py` | *(native window)* |
 
 ---
 
@@ -20,6 +28,7 @@ Three interfaces are available: a **Tkinter desktop GUI**, a **Streamlit web app
 
 - [Key Features](#-key-features)
 - [Quick Start](#-quick-start)
+- [Prerequisites](#prerequisites)
 - [Installation](#-installation)
 - [Configuration](#-configuration)
 - [Running the Chatbot](#-running-the-chatbot)
@@ -30,6 +39,7 @@ Three interfaces are available: a **Tkinter desktop GUI**, a **Streamlit web app
 - [API Reference](#-api-reference)
 - [Testing](#-testing)
 - [CI/CD](#-cicd)
+- [Project Structure](#-project-structure)
 - [Architecture](#-architecture)
 - [Contributing](#-contributing)
 
@@ -62,6 +72,15 @@ echo "OPENAI_API_KEY=sk-..." > .env
 # Start the web UI
 streamlit run web_demo.py
 ```
+
+---
+
+## Prerequisites
+
+- **Python 3.10 or later** (tested on 3.10, 3.11, and 3.12)
+- **pip** (included with Python)
+- *(Optional)* An [OpenAI API key](https://platform.openai.com/account/api-keys) to enable LLM mode
+- *(Optional)* [Docker](https://docs.docker.com/get-docker/) for containerised deployment
 
 ---
 
@@ -223,9 +242,30 @@ The test suite covers:
 
 GitHub Actions runs on every push and pull request to `main`:
 
-1. **Lint** — `flake8` for syntax errors and undefined names
-2. **Test** — `pytest` full suite
-3. **Docker build** — both `web` and `api` images
+1. **Lint** — `flake8` checks for syntax errors and undefined names
+2. **Test** — `pytest` full suite with coverage, across Python 3.10, 3.11, and 3.12
+3. **Docker build** — both `web` and `api` images are built to verify the Dockerfile
+
+Coverage reports are uploaded as build artifacts for each Python version.
+
+---
+
+## 📂 Project Structure
+
+```
+AI_ChatBot/
+├── ai_chatbot.py      # Core module: SimpleBot, LLMBot, ChatBot facade, Tkinter GUI
+├── api.py             # FastAPI REST backend
+├── web_demo.py        # Streamlit web interface
+├── dialog.csv         # Default offline dialog dataset
+├── test_chatbot.py    # Pytest test suite (SimpleBot, ChatBot, FastAPI)
+├── requirements.txt   # Python dependencies
+├── Dockerfile         # Multi-mode Docker image (web / api)
+├── LICENSE            # MIT License
+└── .github/
+    └── workflows/
+        └── ci.yml     # CI pipeline: lint → test → Docker build
+```
 
 ---
 
@@ -263,6 +303,20 @@ GitHub Actions runs on every push and pull request to `main`:
 5. Open a pull request
 
 Please follow PEP 8 and include tests for any new logic.
+
+### Adding dialog patterns
+
+To extend the offline pattern-matching bot, add rows to `dialog.csv`.
+Each question/answer pair uses two rows sharing the same `dialog_id`:
+
+```csv
+dialog_id,line_id,text
+8,1,What is Python?
+8,2,Python is a popular programming language!
+```
+
+- `line_id` **1** = the user question (matched case-insensitively)
+- `line_id` **2** = the bot response
 
 ---
 
