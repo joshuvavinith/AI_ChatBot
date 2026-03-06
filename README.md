@@ -240,7 +240,7 @@ The test suite covers:
 
 ## 🔄 CI/CD
 
-GitHub Actions runs on every push and pull request to `main` / `master`:
+GitHub Actions runs on every push and pull request to `main`:
 
 1. **Lint** — `flake8` checks for syntax errors and undefined names
 2. **Test** — `pytest` full suite with coverage, across Python 3.10, 3.11, and 3.12
