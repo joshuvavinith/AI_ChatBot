@@ -54,8 +54,6 @@ def clear_all_sessions() -> None:
 
 def _get_or_create_session(session_id: Optional[str]) -> tuple[str, ChatBot]:
     """Return (session_id, ChatBot) for the given session; create if missing."""
-    global _default_bot
-
     if session_id is None:
         # Create a new session
         session_id = str(uuid.uuid4())
