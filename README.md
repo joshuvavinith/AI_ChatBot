@@ -274,5 +274,5 @@ Please follow PEP 8 and include tests for any new logic.
 
 ## 🔗 Connect
 
-- 📧 [joshuvavinith.g@care.ac.in](mailto:joshuvavinith.g@care.ac.in)
+- 📧 [joshuavinith@gmail.com](mailto:joshuavinith@gmail.com)
 - 🐙 [@joshuvavinith](https://github.com/joshuvavinith)
