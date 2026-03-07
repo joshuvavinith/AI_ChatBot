@@ -8,6 +8,8 @@ Environment variables:
     OPENAI_API_KEY   Set this to enable the LLM backend (optional).
 """
 
+import os
+
 import streamlit as st
 
 # Load .env if available
@@ -37,10 +39,15 @@ st.caption(
 # ---------------------------------------------------------------------------
 # Session-level chatbot instance
 # ---------------------------------------------------------------------------
+@st.cache_resource
+def _get_bot_factory() -> ChatBot:
+    """Return a template bot (loads data once); actual per-session bots copy from this."""
+    return ChatBot()
+
 
 # Per-session bot stored in session_state so each browser tab/user gets its own history
 if "bot" not in st.session_state:
-    st.session_state.bot = ChatBot()
+    st.session_state.bot = _get_bot_factory()
 
 bot: ChatBot = st.session_state.bot
 

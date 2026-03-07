@@ -26,7 +26,6 @@ except ImportError:
 # Pattern-matching backend
 # ---------------------------------------------------------------------------
 
-
 class SimpleBot:
     """Offline chatbot backed by a CSV dialog dataset."""
 
@@ -266,15 +265,14 @@ def _parse_kaggle_dialogs(file_path: str) -> Optional[str]:
 
         temp_csv_path = os.path.join(os.path.dirname(file_path), "converted_dialog.csv")
         dialog_id = 0
-        with open(temp_csv_path, "w", encoding="utf-8", newline="") as fh:
-            writer = csv.writer(fh)
-            writer.writerow(["dialog_id", "line_id", "text"])
+        with open(temp_csv_path, "w", encoding="utf-8") as fh:
+            fh.write("dialog_id,line_id,text\n")
             for i in range(0, len(lines) - 1, 2):
                 q, a = lines[i].strip(), lines[i + 1].strip()
                 if q and a:
                     dialog_id += 1
-                    writer.writerow([dialog_id, 1, q])
-                    writer.writerow([dialog_id, 2, a])
+                    fh.write(f"{dialog_id},1,{q}\n")
+                    fh.write(f"{dialog_id},2,{a}\n")
 
         print(f"Converted {dialog_id} dialog pairs to CSV format")
         return temp_csv_path

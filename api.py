@@ -46,15 +46,10 @@ app = FastAPI(
 # Per-session bots (keyed by session_id string)
 _sessions: dict[str, ChatBot] = {}
 
-# Dialog file used when creating new sessions (updated by /train)
-_default_dialog_file: Optional[str] = None
-
 
 def clear_all_sessions() -> None:
-    """Remove all active sessions and reset the default dialog file. Intended for use in tests."""
-    global _default_dialog_file
+    """Remove all active sessions. Intended for use in tests."""
     _sessions.clear()
-    _default_dialog_file = None
 
 
 def _get_or_create_session(session_id: Optional[str]) -> tuple[str, ChatBot]:
@@ -64,7 +59,7 @@ def _get_or_create_session(session_id: Optional[str]) -> tuple[str, ChatBot]:
         session_id = str(uuid.uuid4())
 
     if session_id not in _sessions:
-        _sessions[session_id] = ChatBot(dialog_file=_default_dialog_file)
+        _sessions[session_id] = ChatBot()
 
     return session_id, _sessions[session_id]
 
@@ -132,24 +127,21 @@ def reset_session(session_id: str):
 def train(request: TrainRequest):
     """Reload pattern-matching data from a CSV file on the server.
 
-    The file must exist on the server filesystem.  All existing sessions are
-    cleared so that subsequent requests create new sessions using the updated
-    training data.
+    The file must exist on the server filesystem.  This endpoint only
+    affects future sessions created after the reload (existing sessions
+    keep their current bot instance).
     """
     if not os.path.exists(request.dialog_file):
         raise HTTPException(
             status_code=404,
-            detail="Training file not found on server.",
+            detail=f"File not found: {request.dialog_file}",
         )
 
-    # Retrain a fresh bot to validate and count the patterns
+    # Retrain a fresh bot and store it as the template for new sessions
     fresh_bot = ChatBot(dialog_file=request.dialog_file, force_offline=True)
     patterns = fresh_bot.pattern_count
 
-    # Persist the dialog file so new sessions created after this point use it,
-    # then clear existing sessions so they pick up the new data on next request.
-    global _default_dialog_file
-    _default_dialog_file = request.dialog_file
+    # Clear all existing sessions so next requests pick up new data
     _sessions.clear()
 
     return TrainResponse(status="retrained", patterns_loaded=patterns)
