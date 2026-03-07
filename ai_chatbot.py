@@ -26,6 +26,7 @@ except ImportError:
 # Pattern-matching backend
 # ---------------------------------------------------------------------------
 
+
 class SimpleBot:
     """Offline chatbot backed by a CSV dialog dataset."""
 
