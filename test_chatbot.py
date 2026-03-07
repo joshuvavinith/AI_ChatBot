@@ -8,7 +8,6 @@ Run with:
 import os
 import tempfile
 import pytest
-from fastapi.testclient import TestClient
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -216,3 +215,33 @@ class TestAPI:
         client, _ = api_client
         resp = client.post("/train", json={"dialog_file": "/nonexistent/file.csv"})
         assert resp.status_code == 404
+
+    def test_train_affects_new_chat_session(self, api_client):
+        client, _ = api_client
+
+        new_dialog_content = (
+            "dialog_id,line_id,text\n"
+            "1,1,hello\n"
+            "1,2,Hello from NEW dialog!\n"
+        )
+        tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False)
+        try:
+            tmp.write(new_dialog_content)
+            tmp.flush()
+            tmp_path = tmp.name
+        finally:
+            tmp.close()
+
+        try:
+            # Retrain with the new dialog file
+            resp = client.post("/train", json={"dialog_file": tmp_path})
+            assert resp.status_code == 200
+            assert resp.json()["patterns_loaded"] > 0
+
+            # A brand-new session (no session_id) should use the new patterns
+            chat_resp = client.post("/chat", json={"message": "hello"})
+            assert chat_resp.status_code == 200
+            assert "Hello from NEW dialog" in chat_resp.json()["reply"]
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
