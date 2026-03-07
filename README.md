@@ -1,220 +1,332 @@
 
-# 🤖 Simple Python Chatbot with GUI (Tkinter)
+# 🤖 AI ChatBot
 
-## 🚀 Project Description  
-Welcome to the **Simple Python Chatbot Project with GUI**! This repository provides an interactive chatbot built with **Python**, using pattern matching on a dialog dataset from Kaggle, and running inside a friendly **Tkinter-based desktop GUI**.
+![CI](https://github.com/joshuvavinith/AI_ChatBot/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-The chatbot uses a simple but effective pattern matching approach to respond to user queries based on a dataset of over 1,700 dialog patterns. It automatically downloads a rich conversation dataset from Kaggle to provide more natural and varied responses. If Kaggle is unavailable, it falls back to a local dataset. It's perfect for beginners, students, or hobby projects.
+A modern, extensible Python chatbot that generates context-aware, dynamic
+responses. It ships with two interchangeable backends and three ready-to-use
+interfaces — no external services are required to get started.
+
+| Mode | When active | What it uses |
+|------|-------------|--------------|
+| **LLM** | `OPENAI_API_KEY` is set | OpenAI Chat Completions (GPT-3.5 / GPT-4o) |
+| **Pattern Matching** | No API key present | Offline CSV dialog dataset |
+
+Three interfaces are included out of the box:
+
+| Interface | Entry point | Default URL |
+|-----------|-------------|-------------|
+| **Streamlit web app** | `streamlit run web_demo.py` | `http://localhost:8501` |
+| **FastAPI REST API** | `uvicorn api:app --reload` | `http://localhost:8000/docs` |
+| **Tkinter desktop GUI** | `python ai_chatbot.py` | *(native window)* |
 
 ---
 
 ## 📚 Table of Contents
 
 - [Key Features](#-key-features)
-- [Technologies Used](#-technologies-used)
-- [Installation Instructions](#-installation-instructions)
-- [Kaggle Dataset Setup](#-kaggle-dataset-setup)
-- [Usage Example](#-usage-example)
-- [Development Process](#-development-process)
-- [Contributing Guidelines](#-contributing-guidelines)
-- [Evaluation Metrics](#-evaluation-metrics)
-- [Future Work](#-future-work)
-- [Architecture Diagram](#-architecture-diagram)
-- [Interaction with the Chatbot](#-interaction-with-the-chatbot)
-- [Additional Information](#-additional-information)
-- [Connect with Us](#-connect-with-us)
+- [Quick Start](#-quick-start)
+- [Prerequisites](#prerequisites)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Running the Chatbot](#-running-the-chatbot)
+  - [Desktop GUI (Tkinter)](#-desktop-gui-tkinter)
+  - [Web UI (Streamlit)](#-web-ui-streamlit)
+  - [REST API (FastAPI)](#-rest-api-fastapi)
+- [Docker](#-docker)
+- [API Reference](#-api-reference)
+- [Testing](#-testing)
+- [CI/CD](#-cicd)
+- [Project Structure](#-project-structure)
+- [Architecture](#-architecture)
+- [Contributing](#-contributing)
 
 ---
 
 ## ✨ Key Features
 
-- 🔍 **Pattern matching chatbot** using simple but effective techniques
-- 💬 **Interactive GUI** built with Tkinter
-- 📥 **Kaggle dataset integration** with automatic download
-- 📝 **Fallback to local dialog dataset** if Kaggle is unavailable
-- 🔁 Supports exact and partial matching for better responses
-- ⚡ Lightweight with minimal external dependencies
-- 🧩 Easily extensible by adding more dialog patterns
+- 🤖 **LLM backend** — connects to OpenAI's API for intelligent, context-aware responses
+- 📋 **Offline fallback** — pattern matching on a dialog dataset; works without internet/API key
+- 🌐 **Streamlit web UI** — chat from any browser with streaming token output (LLM mode)
+- 🔌 **FastAPI REST API** — `/chat` and `/train` endpoints; per-session conversation memory
+- 🖥️ **Tkinter desktop GUI** — original GUI updated to show backend mode
+- 🧠 **Conversation memory** — recent exchanges are passed to the LLM for follow-up questions
+- 🐳 **Docker support** — single image supports both web and API modes via `MODE` build arg
+- ✅ **Tests** — pytest suite covering core logic and API endpoints
+- 🔄 **CI/CD** — GitHub Actions workflow: lint → test → Docker build
 
 ---
 
-## 🛠️ Technologies Used
-
-- **Python 3.x** – Works with any modern Python version
-- **Tkinter** – Built-in GUI framework
-- **KaggleHub** – For downloading Kaggle datasets
-- **CSV** – For reading dialog data
-- **Random** – For selecting varied responses
-- **Git** – For version control
-
-> ✅ This implementation uses minimal external dependencies, with KaggleHub being the only non-standard library required. The core functionality works even without internet access by falling back to local data.
-
----
-
-## 🔧 Installation Instructions
-
-### 1. Clone the Repository
+## 🚀 Quick Start
 
 ```bash
 git clone https://github.com/joshuvavinith/AI_ChatBot.git
 cd AI_ChatBot
+pip install -r requirements.txt
+
+# (optional) enable LLM mode
+echo "OPENAI_API_KEY=sk-..." > .env
+
+# Start the web UI
+streamlit run web_demo.py
 ```
 
-### 2. Create a Virtual Environment (Recommended)
+---
+
+## Prerequisites
+
+- **Python 3.10 or later** (tested on 3.10, 3.11, and 3.12)
+- **pip** (included with Python)
+- *(Optional)* An [OpenAI API key](https://platform.openai.com/account/api-keys) to enable LLM mode
+- *(Optional)* [Docker](https://docs.docker.com/get-docker/) for containerised deployment
+
+---
+
+## 🔧 Installation
+
+### 1. Clone & set up environment
 
 ```bash
+git clone https://github.com/joshuvavinith/AI_ChatBot.git
+cd AI_ChatBot
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3. Install Dependencies
-
-```bash
+source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
----
+### 2. (Optional) Configure API key
 
-## 🔑 Kaggle Dataset Setup
+Create a `.env` file in the project root:
 
-This project uses the [Simple Dialogs for Chatbot](https://www.kaggle.com/datasets/grafstor/simple-dialogs-for-chatbot) dataset via **KaggleHub**. The dataset contains over 1,800 conversation pairs that significantly enhance the chatbot's response capabilities.
-
-### Dataset Features:
-
-- 1,800+ question-answer pairs
-- Covers a wide range of casual conversation topics
-- Automatically downloaded and processed at runtime
-- Converted from TXT to CSV format for compatibility
-
-### To enable Kaggle downloads:
-
-1. Go to [kaggle.com/account](https://www.kaggle.com/account) and create an API token.
-2. Download the `kaggle.json` file.
-3. Place it in:
-
-   - Linux/macOS: `~/.kaggle/kaggle.json`
-   - Windows: `C:\Users\<YourUsername>\.kaggle\kaggle.json`
-
-Alternatively, set environment variables:
-
-```bash
-export KAGGLE_USERNAME=your_username
-export KAGGLE_KEY=your_key
+```dotenv
+OPENAI_API_KEY=sk-your-key-here
 ```
 
-> ✅ If the dataset can't be downloaded, the chatbot will automatically fall back to the local dialog.csv file with basic conversation patterns.
+Or export it as an environment variable:
+
+```bash
+export OPENAI_API_KEY=sk-your-key-here
+```
+
+Without an API key the bot automatically falls back to offline pattern matching.
 
 ---
 
-## 💬 Usage Example
+## ⚙️ Configuration
 
-### ▶️ To Run the GUI Chatbot:
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OPENAI_API_KEY` | *(unset)* | Enables LLM mode when present |
+
+### Kaggle Dataset (optional)
+
+The pattern-matching bot can use a richer Kaggle dialog dataset.
+To enable it, place `kaggle.json` in `~/.kaggle/` (or set `KAGGLE_USERNAME` / `KAGGLE_KEY`).
+If unavailable, the bot falls back to `dialog.csv`.
+
+---
+
+## 💬 Running the Chatbot
+
+### 🖥️ Desktop GUI (Tkinter)
 
 ```bash
 python ai_chatbot.py
 ```
 
-### 🖥️ GUI Features:
+### 🌐 Web UI (Streamlit)
 
-- Type your message in the input box
-- Hit **Enter** or click **Send**
-- The chatbot responds immediately
-- Say `"bye"` or `"exit"` to end the chat
-
----
-
-## 🧠 Development Process
-
-1. **Dataset Retrieval**: Uses `kagglehub` to fetch dialog data from Kaggle
-2. **Training**: Trains ChatterBot using NLTK preprocessed dialogs
-3. **Interface**: Built with Tkinter for easy interaction
-4. **Fallback**: Uses hardcoded sample training data if download fails
-
----
-
-## 🤝 Contributing Guidelines
-
-We welcome contributions! 🙌
-
-### How to Contribute:
-
-1. **Fork this repository**
-2. Create a branch:
-
-   ```bash
-   git checkout -b feature-branch
-   ```
-
-3. Make your changes and commit:
-
-   ```bash
-   git commit -m "Add new feature"
-   ```
-
-4. Push and create a PR:
-
-   ```bash
-   git push origin feature-branch
-   ```
-
-> 💡 Follow Python best practices and test before submitting.
-
----
-
-## 📈 Evaluation Metrics
-
-- **BLEU Score** – Quality of generated response
-- **Accuracy** – Expected vs actual answers
-- **Responsiveness** – Time between input and output
-- **User Feedback** – Manual quality testing
-
----
-
-## 🌱 Future Work
-
-- 🌐 Add API/web support for Flask or FastAPI
-- 🧠 Switch to GPT/BERT for smarter conversations
-- 🗣️ Voice integration with `speech_recognition`
-- 💾 Save and reload previous conversation history
-- 🖥️ Package as a desktop app using `pyinstaller`
-
----
-
-## 📊 Architecture Diagram
-
+```bash
+streamlit run web_demo.py
 ```
-+-------------+        +----------------------+        +-------------+
-| User Input  +------->+    ChatBot Engine     +------->+ Bot Reply   |
-+------+------+        +----------------------+        +-------------+
-       |
-       v
-  [ Tkinter GUI ]
-       |
-       v
-[ Kaggle Dataset Trainer ]
+
+Open your browser at `http://localhost:8501`.
+
+Features:
+- Full conversation history
+- Streaming token output in LLM mode (looks like ChatGPT)
+- "Clear conversation" button in the sidebar
+
+### 🔌 REST API (FastAPI)
+
+```bash
+uvicorn api:app --reload
+```
+
+Interactive docs available at `http://localhost:8000/docs`.
+
+---
+
+## 🐳 Docker
+
+### Build
+
+```bash
+# Web UI (default)
+docker build -t ai-chatbot:web .
+
+# API mode
+docker build --build-arg MODE=api -t ai-chatbot:api .
+```
+
+### Run
+
+```bash
+# Web UI — visit http://localhost:8501
+docker run -p 8501:8501 -e OPENAI_API_KEY=sk-... ai-chatbot:web
+
+# REST API — visit http://localhost:8000/docs
+docker run -p 8000:8000 -e OPENAI_API_KEY=sk-... ai-chatbot:api
 ```
 
 ---
 
-## 💬 Interaction with the Chatbot
+## 📡 API Reference
 
-The chatbot can be integrated or extended with:
+### `POST /chat`
 
-- 📚 Custom datasets (CSV/TXT)
-- ☁️ Cloud API support
-- 🔊 Voice UI
-- 💡 Smart context-based conversations
+Send a message and get a reply. Omit `session_id` to start a new session.
+
+```json
+// Request
+{ "message": "Hello!", "session_id": "optional-uuid" }
+
+// Response
+{
+  "reply": "Hi there! How can I help you?",
+  "session_id": "550e8400-e29b-41d4-a716-446655440000",
+  "mode": "pattern"
+}
+```
+
+### `DELETE /sessions/{session_id}`
+
+Reset (delete) a conversation session.
+
+### `POST /train`
+
+Reload pattern-matching data from a CSV file on the server.
+
+```json
+// Request
+{ "dialog_file": "/path/to/dialog.csv" }
+
+// Response
+{ "status": "retrained", "patterns_loaded": 42 }
+```
+
+### `GET /health`
+
+```json
+{ "status": "ok" }
+```
 
 ---
 
-## 📱 Additional Information
+## 🧪 Testing
 
-- **Live Demo**: Coming soon!
-- **License**: [MIT License](./LICENSE)
+```bash
+pytest test_chatbot.py -v
+```
+
+The test suite covers:
+- `SimpleBot` — training, exact/partial matching, defaults, missing file
+- `ChatBot` — offline mode, history management, streaming, history cap, retraining
+- FastAPI — all endpoints (health, chat, delete session, train)
 
 ---
 
-## 🔗 Connect with Us
+## 🔄 CI/CD
 
-- 📧 Email: [joshuvavinith.g@care.ac.in](mailto:joshuvavinith.g@care.ac.in)
-- 🐙 GitHub: [@joshuvavinith](https://github.com/joshuvavinith)
+GitHub Actions runs on every push and pull request to `main`:
+
+1. **Lint** — `flake8` checks for syntax errors and undefined names
+2. **Test** — `pytest` full suite with coverage, across Python 3.10, 3.11, and 3.12
+3. **Docker build** — both `web` and `api` images are built to verify the Dockerfile
+
+Coverage reports are uploaded as build artifacts for each Python version.
+
+---
+
+## 📂 Project Structure
+
+```
+AI_ChatBot/
+├── ai_chatbot.py      # Core module: SimpleBot, LLMBot, ChatBot facade, Tkinter GUI
+├── api.py             # FastAPI REST backend
+├── web_demo.py        # Streamlit web interface
+├── dialog.csv         # Default offline dialog dataset
+├── test_chatbot.py    # Pytest test suite (SimpleBot, ChatBot, FastAPI)
+├── requirements.txt   # Python dependencies
+├── Dockerfile         # Multi-mode Docker image (web / api)
+├── LICENSE            # MIT License
+└── .github/
+    └── workflows/
+        └── ci.yml     # CI pipeline: lint → test → Docker build
+```
+
+---
+
+## 📐 Architecture
+
+```
++------------------+     +------------------+     +------------------+
+|  Streamlit Web   |     |  FastAPI REST     |     |  Tkinter Desktop |
+|  (web_demo.py)   |     |  (api.py)         |     |  (ai_chatbot.py) |
++--------+---------+     +--------+---------+     +--------+---------+
+         |                        |                         |
+         +------------------------+-------------------------+
+                                  |
+                         +--------v---------+
+                         |    ChatBot       |  ← ai_chatbot.py
+                         |  (facade)        |
+                         +--+----------+----+
+                            |          |
+               +------------+          +------------+
+               |                                    |
+      +--------v---------+              +-----------v------+
+      |   LLMBot         |              |   SimpleBot      |
+      |  (OpenAI API)    |              |  (CSV patterns)  |
+      +------------------+              +------------------+
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork this repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes and run `pytest test_chatbot.py -v`
+4. Commit and push: `git push origin feature/my-feature`
+5. Open a pull request
+
+Please follow PEP 8 and include tests for any new logic.
+
+### Adding dialog patterns
+
+To extend the offline pattern-matching bot, add rows to `dialog.csv`.
+Each question/answer pair uses two rows sharing the same `dialog_id`:
+
+```csv
+dialog_id,line_id,text
+8,1,What is Python?
+8,2,Python is a popular programming language!
+```
+
+- `line_id` **1** = the user question (matched case-insensitively)
+- `line_id` **2** = the bot response
+
+---
+
+## 📄 License
+
+[MIT License](./LICENSE)
+
+---
+
+## 🔗 Connect
+
+- 📧 [joshuavinith@gmail.com](mailto:joshuavinith@gmail.com)
+- 🐙 [@joshuvavinith](https://github.com/joshuvavinith)
